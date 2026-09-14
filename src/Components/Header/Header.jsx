@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import Logo from '../../assets/images/logo1.png';
 import { Link, useNavigate } from 'react-router-dom';
-import CountryDropdown from '../CountryDropdown/CountryDropdown';
 import SearchBox from './SearchBox/SearchBox';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { FiUser, FiShoppingBag, FiLogOut, FiLock } from 'react-icons/fi';
+import { FiUser, FiShoppingBag, FiLogOut } from 'react-icons/fi';
 import { IoBagOutline } from 'react-icons/io5';
 import Navigation from './Navigation/Navigation';
 import { useAuth } from '../../context/AuthContext';

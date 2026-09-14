@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../context/AuthContext';
-import Logo from '../../assets/images/logo1.png';
 import { FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 import { MALAYSIAN_STATES, SUPPORTED_COUNTRIES } from '../../utils/locationData';
 import CustomSelect from '../../Components/CustomSelect/CustomSelect';

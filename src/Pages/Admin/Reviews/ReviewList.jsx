@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { FiStar, FiSearch, FiTrash2, FiMessageSquare, FiX, FiCheck, FiEye, FiUser, FiShoppingBag, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { FiStar, FiSearch, FiTrash2, FiMessageSquare, FiX, FiEye, FiUser, FiShoppingBag, FiCalendar, FiMapPin } from 'react-icons/fi';
 import apiClient from '../../../api/apiClient';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
 

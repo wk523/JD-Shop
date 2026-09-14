@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../../../api/apiClient';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { FiEye, FiSearch, FiPrinter, FiCheck, FiX, FiCreditCard, FiCalendar, FiLock, FiRefreshCw, FiThumbsUp, FiThumbsDown, FiImage } from 'react-icons/fi';
+import { FiEye, FiSearch, FiPrinter, FiCheck, FiX, FiCreditCard, FiCalendar, FiLock, FiRefreshCw, FiThumbsUp, FiThumbsDown } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
 
 const OrderList = () => {

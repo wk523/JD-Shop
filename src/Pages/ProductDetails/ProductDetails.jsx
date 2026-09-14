@@ -293,7 +293,7 @@ const ProductDetails = () => {
                           <img
                             key={imgIdx}
                             src={img}
-                            alt={`Review photo ${imgIdx + 1}`}
+                            alt={`Review ${imgIdx + 1}`}
                             className="rounded border cursor-pointer hover-shadow"
                             style={{ width: '64px', height: '64px', objectFit: 'cover', transition: 'transform 0.15s' }}
                             onClick={() => setSelectedReviewImage(img)}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../../../api/apiClient';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { FiPlus, FiTrash2, FiEdit, FiSearch, FiCalendar, FiCloud, FiLock } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiEdit, FiSearch, FiCalendar, FiCloud } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
 
 const toLocalISOString = (date) => {

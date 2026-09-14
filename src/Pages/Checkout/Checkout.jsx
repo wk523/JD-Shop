@@ -48,7 +48,6 @@ const CheckoutForm = () => {
     discountTotal,
     shippingFee,
     grandTotal,
-    clearCart,
     removePurchasedItems,
     refreshCart
   } = useCart();
@@ -171,7 +170,7 @@ const CheckoutForm = () => {
           throw new Error(intentRes.data.message || 'Failed to initialize Stripe payment intent.');
         }
 
-        const { clientSecret, paymentIntentId } = intentRes.data;
+        const { clientSecret } = intentRes.data;
 
         // Step 3: Confirm Card Payment (3DS modal opens directly on page)
         console.log('[CHECKOUT STEP 3] Confirming Stripe card payment...');

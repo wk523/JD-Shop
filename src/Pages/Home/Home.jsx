@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
 import ProductCard from '../../Components/ProductCard/ProductCard';
 import ProductModal from '../../Components/ProductModal/ProductModal';
 import apiClient from '../../api/apiClient';
@@ -60,8 +59,6 @@ const Home = () => {
   const handleNextBanner = () => {
     setActiveBannerIndex((prev) => (prev + 1) % promotions.length);
   };
-
-  const currentPromo = promotions.length > 0 ? promotions[activeBannerIndex] : null;
 
 
 
