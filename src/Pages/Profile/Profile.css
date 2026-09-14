@@ -1,0 +1,62 @@
+.profile-page {
+  min-height: 80vh;
+}
+
+.avatar-preview-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-nav .nav-link {
+  font-weight: 500;
+  color: #4a5568;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.profile-nav .nav-link:hover {
+  background-color: #f7fafc;
+  color: #2b6cb0;
+}
+
+.profile-nav .nav-link.active {
+  background-color: #2b6cb0;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
+}
+
+.bg-light-primary {
+  background-color: #f0f7ff;
+}
+
+.font-weight-600 {
+  font-weight: 600;
+}
+
+.font-weight-500 {
+  font-weight: 500;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 1rem;
+}
