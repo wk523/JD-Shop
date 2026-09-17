@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiPlus, FiTrash2, FiEdit, FiSearch, FiCalendar, FiCloud } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
 
 const toLocalISOString = (date) => {
   if (!date) return '';
@@ -475,14 +476,17 @@ const PromotionList = () => {
                     </div>
                     <div className="col-md-4">
                       <label className="font-weight-bold small text-muted">Status</label>
-                      <select
-                        className="form-control"
+                      <CustomSelect
+                        options={[
+                          { value: 'active', label: 'Active' },
+                          { value: 'inactive', label: 'Inactive' }
+                        ]}
                         value={formData.status}
-                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                      </select>
+                        onChange={(val) => {
+                          const st = val.target ? val.target.value : val;
+                          setFormData(prev => ({ ...prev, status: st }));
+                        }}
+                      />
                     </div>
                   </div>
 

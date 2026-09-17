@@ -313,6 +313,20 @@ const initSchemaAndSeed = async () => {
       `);
     }
 
+    // 18. Notifications Table
+    await query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INT REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50) DEFAULT 'general',
+        reference_id VARCHAR(100),
+        is_read BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     console.log('✅ Database schema tables created successfully.');
 
     // --- SEED INITIAL VOUCHERS & PROMOTIONS ---

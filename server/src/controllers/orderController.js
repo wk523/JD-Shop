@@ -1,6 +1,7 @@
 const { pool, query } = require('../config/db');
 const { logPaymentTransaction } = require('../utils/paymentLogger');
 const { sendOrderReceiptEmail, sendPaymentSuccessEmail, sendRefundSuccessEmail } = require('../services/emailService');
+const { createNotification } = require('../services/notificationService');
 const Stripe = require('stripe');
 
 const { getStripeKeys } = require('./settingsController');
@@ -336,6 +337,18 @@ const createOrder = async (req, res) => {
 
     await client.query('COMMIT');
 
+    // Trigger in-app notification ONLY for instant/paid orders (e.g. COD or pre-paid)
+    // Online payments (Stripe) will trigger notification upon payment confirmation in /payment/confirm-intent
+    if (userId && isInstantFinal) {
+      createNotification({
+        userId,
+        title: 'Order Placed Successfully',
+        message: `Your order #${order.order_number} for RM ${parseFloat(order.total_amount).toFixed(2)} has been placed!`,
+        type: 'order',
+        referenceId: order.id
+      }).catch(e => console.error('Order notification error:', e));
+    }
+
     // Log payment transaction to server/logs/payment.log
     logPaymentTransaction({
       status: order.payment_status === 'paid' ? 'SUCCESS' : 'PENDING',
@@ -595,6 +608,21 @@ const updateOrderStatusAdmin = async (req, res) => {
 
     const updatedOrder = updateRes.rows[0];
 
+    // Trigger notification on order status update
+    if (updatedOrder.user_id) {
+      const statusMsg = order_status 
+        ? `Your order #${updatedOrder.order_number} status was updated to "${updatedOrder.order_status.toUpperCase()}".`
+        : `Your order #${updatedOrder.order_number} payment status was updated to "${updatedOrder.payment_status.toUpperCase()}".`;
+
+      createNotification({
+        userId: updatedOrder.user_id,
+        title: `Order #${updatedOrder.order_number} Updated`,
+        message: statusMsg,
+        type: 'order',
+        referenceId: updatedOrder.id
+      }).catch(e => console.error('Order status notification error:', e));
+    }
+
     // Trigger emails on status transitions
     if (payment_status === 'paid' && existingOrder.payment_status !== 'paid') {
       sendPaymentSuccessEmail(updatedOrder).catch(e => console.error('Payment success email error:', e));
@@ -618,6 +646,7 @@ const updateOrderStatusAdmin = async (req, res) => {
 const deleteOrderAdmin = async (req, res) => {
   try {
     const { id } = req.params;
+    await query(`DELETE FROM notifications WHERE reference_id = $1 AND type = 'order'`, [String(id)]);
     await query(`DELETE FROM order_items WHERE order_id = $1`, [id]);
     const delRes = await query(`DELETE FROM orders WHERE id = $1 RETURNING id`, [id]);
 
@@ -640,7 +669,8 @@ const cancelFailedOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Order ID is required.' });
     }
 
-    console.log('[ORDER ROLLBACK] Deleting failed order record:', id);
+    console.log('[ORDER ROLLBACK] Deleting failed order record & notifications:', id);
+    await query(`DELETE FROM notifications WHERE reference_id = $1 AND type = 'order'`, [String(id)]);
     await query(`DELETE FROM order_items WHERE order_id = $1`, [id]);
     const delRes = await query(`DELETE FROM orders WHERE id = $1 RETURNING id`, [id]);
 
@@ -812,6 +842,17 @@ const processRefundAdmin = async (req, res) => {
       sendRefundSuccessEmail(order, { amount: refundReq.amount, reason: refundReq.reason, admin_note: noteText })
         .catch(e => console.error('Refund success email error:', e));
 
+      // Trigger notification for refund approval
+      if (refundReq.user_id) {
+        createNotification({
+          userId: refundReq.user_id,
+          title: 'Refund Request Approved',
+          message: `Your refund request of RM ${parseFloat(refundReq.amount).toFixed(2)} for order #${order.order_number} has been approved.`,
+          type: 'refund',
+          referenceId: order.id
+        }).catch(e => console.error('Refund approval notification error:', e));
+      }
+
       return res.json({
         success: true,
         message: gatewayRes.isManual
@@ -829,6 +870,17 @@ const processRefundAdmin = async (req, res) => {
         `UPDATE orders SET refund_status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
         [refundReq.order_id]
       );
+
+      // Trigger notification for refund rejection
+      if (refundReq.user_id) {
+        createNotification({
+          userId: refundReq.user_id,
+          title: 'Refund Request Rejected',
+          message: `Your refund request for order #${order.order_number} was rejected. Note: ${admin_note || 'Rejected by administrator.'}`,
+          type: 'refund',
+          referenceId: order.id
+        }).catch(e => console.error('Refund rejection notification error:', e));
+      }
 
       return res.json({
         success: true,

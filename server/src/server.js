@@ -45,6 +45,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 
+const notificationRoutes = require('./routes/notificationRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
@@ -76,6 +77,7 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // Health Check

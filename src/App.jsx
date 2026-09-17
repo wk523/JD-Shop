@@ -8,6 +8,7 @@ import Footer from './Components/Footer/Footer';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Customer Storefront Pages
 import Home from './Pages/Home/Home';
@@ -16,6 +17,7 @@ import ProductDetails from './Pages/ProductDetails/ProductDetails';
 import Cart from './Pages/Cart/Cart';
 import Checkout from './Pages/Checkout/Checkout';
 import Orders from './Pages/Orders/Orders';
+import Notifications from './Pages/Notifications/Notifications';
 import Vouchers from './Pages/Vouchers/Vouchers';
 import Promotions from './Pages/Promotions/Promotions';
 import PromotionDetails from './Pages/Promotions/PromotionDetails';
@@ -60,6 +62,7 @@ const AppRoutes = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/vouchers" element={<Vouchers />} />
         <Route path="/promotions" element={<Promotions />} />
@@ -122,9 +125,11 @@ function App() {
     <BrowserRouter>
       <MyContext.Provider value={values}>
         <AuthProvider>
-          <CartProvider>
-            <AppRoutes />
-          </CartProvider>
+          <NotificationProvider>
+            <CartProvider>
+              <AppRoutes />
+            </CartProvider>
+          </NotificationProvider>
         </AuthProvider>
       </MyContext.Provider>
     </BrowserRouter>

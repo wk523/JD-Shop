@@ -17,7 +17,7 @@ import apiClient from '../../api/apiClient';
 import { MALAYSIAN_STATES, SUPPORTED_COUNTRIES } from '../../utils/locationData';
 import CustomSelect from '../../Components/CustomSelect/CustomSelect';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+// Dynamic Stripe Promise loaded inside Checkout component based on Admin Settings
 
 const ELEMENT_OPTIONS = {
   style: {
@@ -573,6 +573,48 @@ const CheckoutForm = () => {
 };
 
 const Checkout = () => {
+  const [stripePromise, setStripePromise] = useState(null);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStripeConfig = async () => {
+      try {
+        const res = await apiClient.get('/payment/config');
+        if (isMounted) {
+          const key = (res.data.success && res.data.publishableKey && res.data.publishableKey !== 'pk_test_placeholder')
+            ? res.data.publishableKey
+            : (process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+          
+          setStripePromise(loadStripe(key));
+        }
+      } catch (err) {
+        console.error('Failed to load Stripe publishable key:', err);
+        if (isMounted) {
+          setStripePromise(loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder'));
+        }
+      } finally {
+        if (isMounted) setLoadingConfig(false);
+      }
+    };
+
+    fetchStripeConfig();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loadingConfig) {
+    return (
+      <div className="py-5 text-center min-vh-50 d-flex flex-column align-items-center justify-content-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+        <p className="mt-3 text-muted font-weight-500">Initializing checkout & payment system...</p>
+      </div>
+    );
+  }
+
   return (
     <Elements stripe={stripePromise}>
       <CheckoutForm />

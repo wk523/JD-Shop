@@ -113,6 +113,18 @@ router.post('/confirm-intent', async (req, res) => {
           const { sendPaymentSuccessEmail } = require('../services/emailService');
           sendPaymentSuccessEmail(order, itemsRes.rows).catch(e => console.error('Stripe payment success email error:', e));
 
+          // Trigger in-app notification for confirmed Stripe order placement
+          if (order.user_id) {
+            const { createNotification } = require('../services/notificationService');
+            createNotification({
+              userId: order.user_id,
+              title: 'Order Placed Successfully',
+              message: `Your order #${order.order_number} for RM ${parseFloat(order.total_amount).toFixed(2)} has been placed!`,
+              type: 'order',
+              referenceId: order.id
+            }).catch(e => console.error('Stripe order notification error:', e));
+          }
+
           return res.json({
             success: true,
             message: 'Payment confirmed successfully!',

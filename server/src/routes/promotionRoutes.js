@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../config/db');
+const { createNotificationForCustomers } = require('../services/notificationService');
 
 const mapPromotionProduct = (item) => {
   let normalPrice = parseFloat(item.normal_price || item.price || 0);
@@ -207,6 +208,16 @@ router.post('/', async (req, res) => {
           [promotion.id, prod.product_id, prod.sale_price || null, prod.discount_percentage || null]
         );
       }
+    }
+
+    // Trigger notification to all active customers if campaign is active
+    if (promotion.status === 'active') {
+      createNotificationForCustomers({
+        title: `🔥 New Promotion: ${promotion.title}`,
+        message: `Check out our new campaign "${promotion.title}" for special discounts and exclusive deals!`,
+        type: 'promo',
+        referenceId: promotion.id
+      }).catch(e => console.error('Promo notification broadcast error:', e));
     }
 
     res.json({ success: true, promotion, message: 'Promotion campaign created successfully!' });

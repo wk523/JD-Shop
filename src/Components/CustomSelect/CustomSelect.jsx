@@ -9,7 +9,10 @@ const CustomSelect = ({
   placeholder = 'Select option...',
   className = '',
   style = {},
-  disabled = false
+  disabled = false,
+  size = 'md', // 'sm' | 'md' | 'lg'
+  pill = false,
+  name = ''
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -29,8 +32,8 @@ const CustomSelect = ({
   const formattedOptions = options.map(opt => {
     if (typeof opt === 'object' && opt !== null) {
       return { 
-        value: opt.value ?? opt.code ?? opt.name, 
-        label: opt.label ?? opt.name, 
+        value: opt.value ?? opt.code ?? opt.id ?? opt.name, 
+        label: opt.label ?? opt.name ?? String(opt.value), 
         flag: opt.flag 
       };
     }
@@ -41,13 +44,23 @@ const CustomSelect = ({
 
   const handleSelect = (optionValue) => {
     if (disabled) return;
-    onChange(optionValue);
+    if (typeof onChange === 'function') {
+      const eventObj = {
+        target: { name: name || '', value: optionValue },
+        value: optionValue,
+        toString: () => String(optionValue)
+      };
+      onChange(eventObj);
+    }
     setIsOpen(false);
   };
 
+  const isSmall = size === 'sm' || size === 'small';
+  const isPill = pill || className.includes('rounded-pill');
+
   return (
     <div 
-      className={`custom-select-container ${isOpen ? 'is-open' : ''} ${disabled ? 'is-disabled' : ''} ${className}`} 
+      className={`custom-select-container ${isOpen ? 'is-open' : ''} ${disabled ? 'is-disabled' : ''} ${isSmall ? 'is-sm' : ''} ${isPill ? 'is-pill' : ''} ${className}`} 
       ref={dropdownRef} 
       style={style}
     >

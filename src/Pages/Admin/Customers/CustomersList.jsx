@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import apiClient from '../../../api/apiClient';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
 import {
   FiSearch,
   FiMail,
@@ -236,16 +237,18 @@ const CustomersList = () => {
             </div>
           </div>
           <div className="col-md-5 d-flex justify-content-md-end align-items-center">
-            <label className="mr-2 mb-0 small font-weight-bold text-muted">Status:</label>
-            <select
-              className="form-control custom-select w-auto"
+            <label className="mr-2 mb-0 small font-weight-bold text-muted flex-shrink-0">Status:</label>
+            <CustomSelect
+              size="sm"
+              options={[
+                { value: 'all', label: 'All Statuses' },
+                { value: 'active', label: 'Active Only' },
+                { value: 'inactive', label: 'Inactive / Deactivated' }
+              ]}
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All Statuses</option>
-              <option value="active">Active Only</option>
-              <option value="inactive">Inactive / Deactivated</option>
-            </select>
+              onChange={(val) => setStatusFilter(val.target ? val.target.value : val)}
+              style={{ minWidth: '170px' }}
+            />
           </div>
         </div>
       </div>
@@ -449,14 +452,17 @@ const CustomersList = () => {
                     </div>
                     <div className="col-md-4">
                       <label className="form-label font-weight-600">Account Status</label>
-                      <select
-                        className="form-control custom-select"
+                      <CustomSelect
+                        options={[
+                          { value: 'active', label: 'Active' },
+                          { value: 'inactive', label: 'Inactive / Deactivated' }
+                        ]}
                         value={createForm.status}
-                        onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive / Deactivated</option>
-                      </select>
+                        onChange={(val) => {
+                          const st = val.target ? val.target.value : val;
+                          setCreateForm(prev => ({ ...prev, status: st }));
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -553,14 +559,17 @@ const CustomersList = () => {
                     </div>
                     <div className="col-md-4">
                       <label className="form-label font-weight-600">Status</label>
-                      <select
-                        className="form-control custom-select"
+                      <CustomSelect
+                        options={[
+                          { value: 'active', label: 'Active' },
+                          { value: 'inactive', label: 'Inactive' }
+                        ]}
                         value={editForm.status}
-                        onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                      </select>
+                        onChange={(val) => {
+                          const st = val.target ? val.target.value : val;
+                          setEditForm(prev => ({ ...prev, status: st }));
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

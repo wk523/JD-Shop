@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiPlus, FiEdit, FiTrash2, FiCloud } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -285,15 +286,17 @@ const CategoryList = () => {
 
           <div className="mb-3">
             <label className="font-weight-bold small text-muted">Publish Status <span className="required-star">*</span></label>
-            <select
-              className="form-control"
+            <CustomSelect
+              options={[
+                { value: 'published', label: 'Published' },
+                { value: 'draft', label: 'Draft' }
+              ]}
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              required
-            >
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
+              onChange={(val) => {
+                const st = val.target ? val.target.value : val;
+                setFormData(prev => ({ ...prev, status: st }));
+              }}
+            />
           </div>
 
           <div className="mb-4">

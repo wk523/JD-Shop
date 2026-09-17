@@ -5,19 +5,25 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { FiUser, FiShoppingBag, FiLogOut } from 'react-icons/fi';
+import Badge from '@mui/material/Badge';
+import { FiUser, FiShoppingBag, FiLogOut, FiBell, FiRotateCcw, FiTag } from 'react-icons/fi';
 import { IoBagOutline } from 'react-icons/io5';
 import Navigation from './Navigation/Navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 const Header = () => {
   const { customer, customerLogout } = useAuth();
   const { cartCount, cartTotal } = useCart();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+
+  const [notiAnchorEl, setNotiAnchorEl] = useState(null);
+  const openNotiMenu = Boolean(notiAnchorEl);
 
   const handleOpenUserMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -27,10 +33,47 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  const handleOpenNotiMenu = (event) => {
+    setNotiAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseNotiMenu = () => {
+    setNotiAnchorEl(null);
+  };
+
   const handleLogout = () => {
     customerLogout();
     handleCloseUserMenu();
     navigate('/');
+  };
+
+  const handleNotiClick = (noti) => {
+    if (!noti.is_read) {
+      markAsRead(noti.id);
+    }
+    handleCloseNotiMenu();
+    if (noti.type === 'order' || noti.type === 'refund') {
+      navigate('/orders');
+    } else if (noti.type === 'promo') {
+      if (noti.reference_id) {
+        navigate(`/promotions/${noti.reference_id}`);
+      } else {
+        navigate('/promotions');
+      }
+    }
+  };
+
+  const getNotiIcon = (type) => {
+    switch (type) {
+      case 'order':
+        return <FiShoppingBag className="text-primary" size={16} />;
+      case 'refund':
+        return <FiRotateCcw className="text-warning" size={16} />;
+      case 'promo':
+        return <FiTag className="text-danger" size={16} />;
+      default:
+        return <FiBell className="text-info" size={16} />;
+    }
   };
 
   return (
@@ -134,10 +177,117 @@ const Header = () => {
                           <ListItemIcon><FiShoppingBag size={18} /></ListItemIcon>
                           My Orders
                         </MenuItem>
+                        <MenuItem onClick={() => navigate('/notifications')}>
+                          <ListItemIcon>
+                            <Badge badgeContent={unreadCount} color="error">
+                              <FiBell size={18} />
+                            </Badge>
+                          </ListItemIcon>
+                          Notifications
+                        </MenuItem>
                         <MenuItem onClick={handleLogout} className="text-danger">
                           <ListItemIcon><FiLogOut size={18} color="red" /></ListItemIcon>
                           Logout
                         </MenuItem>
+                      </Menu>
+
+                      {/* Notification Bell Icon */}
+                      <Button
+                        className="circle mr-3"
+                        onClick={handleOpenNotiMenu}
+                        title="Notifications"
+                        style={{ minWidth: 'auto' }}
+                      >
+                        <Badge badgeContent={unreadCount} color="error" max={99}>
+                          <FiBell size={20} />
+                        </Badge>
+                      </Button>
+                      <Menu
+                        anchorEl={notiAnchorEl}
+                        open={openNotiMenu}
+                        onClose={handleCloseNotiMenu}
+                        PaperProps={{
+                          elevation: 4,
+                          sx: { borderRadius: 3, width: 340, maxHeight: 450, mt: 1.5 }
+                        }}
+                      >
+                        <div className="px-3 py-2 border-bottom d-flex align-items-center justify-content-between bg-light">
+                          <div className="font-weight-bold d-flex align-items-center gap-2">
+                            <FiBell size={16} className="text-primary" />
+                            Notifications
+                            {unreadCount > 0 && (
+                              <span className="badge badge-primary px-2 py-1" style={{ fontSize: '11px' }}>
+                                {unreadCount} new
+                              </span>
+                            )}
+                          </div>
+                          {unreadCount > 0 && (
+                            <Button
+                              size="small"
+                              style={{ fontSize: '11px', textTransform: 'none' }}
+                              onClick={markAllAsRead}
+                            >
+                              Mark all read
+                            </Button>
+                          )}
+                        </div>
+
+                        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                          {notifications.length === 0 ? (
+                            <div className="px-3 py-4 text-center text-muted small">
+                              No notifications yet
+                            </div>
+                          ) : (
+                            notifications.slice(0, 5).map((noti) => (
+                              <MenuItem
+                                key={noti.id}
+                                onClick={() => handleNotiClick(noti)}
+                                className={`px-3 py-2 border-bottom align-items-start ${
+                                  !noti.is_read ? 'bg-light-blue' : ''
+                                }`}
+                                style={{
+                                  backgroundColor: !noti.is_read ? '#f0f7ff' : '#ffffff',
+                                  whiteSpace: 'normal'
+                                }}
+                              >
+                                <div className="mr-2 mt-1">
+                                  {getNotiIcon(noti.type)}
+                                </div>
+                                <div className="flex-grow-1" style={{ fontSize: '13px' }}>
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <span className={`font-weight-bold ${!noti.is_read ? 'text-primary' : 'text-dark'}`}>
+                                      {noti.title}
+                                    </span>
+                                    {!noti.is_read && (
+                                      <span className="badge badge-primary rounded-circle p-1" style={{ width: 6, height: 6 }} />
+                                    )}
+                                  </div>
+                                  <div className="text-muted text-truncate-2" style={{ fontSize: '12px', lineHeight: '1.3' }}>
+                                    {noti.message}
+                                  </div>
+                                  <div className="small text-secondary mt-1" style={{ fontSize: '10px' }}>
+                                    {new Date(noti.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </div>
+                                </div>
+                              </MenuItem>
+                            ))
+                          )}
+                        </div>
+
+                        <div className="p-2 text-center border-top bg-light">
+                          <Button
+                            size="small"
+                            fullWidth
+                            color="primary"
+                            onClick={() => {
+                              handleCloseNotiMenu();
+                              navigate('/notifications');
+                            }}
+                            style={{ textTransform: 'none', fontWeight: 600 }}
+                          >
+                            View All Notifications
+                          </Button>
+                        </div>
                       </Menu>
                     </>
                   ) : (

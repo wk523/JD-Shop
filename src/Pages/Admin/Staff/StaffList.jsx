@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiUserPlus, FiEdit, FiTrash2, FiShield } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
 
 const StaffList = () => {
   const [staffList, setStaffList] = useState([]);
@@ -249,17 +250,18 @@ const StaffList = () => {
             </div>
             <div className="col-md-6 mb-3">
               <label className="font-weight-bold small text-muted">Assigned Security Role <span className="required-star">*</span></label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={[
+                  { value: '', label: 'Select Role' },
+                  ...roles.map(r => ({ value: r.id, label: `${r.name.toUpperCase()} - ${r.description}` }))
+                ]}
                 value={formData.role_id}
-                onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
-                required
-              >
-                <option value="">Select Role</option>
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id}>{r.name.toUpperCase()} - {r.description}</option>
-                ))}
-              </select>
+                onChange={(val) => {
+                  const roleId = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, role_id: roleId }));
+                }}
+                placeholder="Select Role"
+              />
             </div>
           </div>
 

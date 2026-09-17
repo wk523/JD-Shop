@@ -4,6 +4,38 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiEye, FiSearch, FiPrinter, FiCheck, FiX, FiCreditCard, FiCalendar, FiLock, FiRefreshCw, FiThumbsUp, FiThumbsDown } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
+
+const PAYMENT_STATUS_OPTIONS = [
+  { value: 'all', label: 'All Payment Statuses' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'pending', label: 'Pending Payment' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'refunded', label: 'Refunded' }
+];
+
+const DATE_RANGE_OPTIONS = [
+  { value: 'all', label: 'All Time' },
+  { value: 'today', label: 'Today' },
+  { value: '7days', label: 'Last 7 Days' },
+  { value: '30days', label: 'Last 30 Days' },
+  { value: 'this_month', label: 'This Month' }
+];
+
+const ORDER_STATUS_ROW_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'processing', label: 'Processing' },
+  { value: 'shipped', label: 'Shipped' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' }
+];
+
+const PAYMENT_STATUS_ROW_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'refunded', label: 'Refunded' }
+];
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -191,35 +223,27 @@ const OrderList = () => {
         <div className="row g-2 align-items-center">
           <div className="col-lg-3 col-md-4 mb-2 mb-md-0">
             <div className="d-flex align-items-center">
-              <FiCreditCard className="mr-2 text-muted" size={16} />
-              <select
-                className="form-control form-control-sm font-weight-bold rounded-pill"
+              <FiCreditCard className="mr-2 text-muted flex-shrink-0" size={16} />
+              <CustomSelect
+                size="sm"
+                pill
+                options={PAYMENT_STATUS_OPTIONS}
                 value={paymentStatusFilter}
-                onChange={(e) => setPaymentStatusFilter(e.target.value)}
-              >
-                <option value="all">All Payment Statuses</option>
-                <option value="paid">Paid</option>
-                <option value="pending">Pending Payment</option>
-                <option value="failed">Failed</option>
-                <option value="refunded">Refunded</option>
-              </select>
+                onChange={(val) => setPaymentStatusFilter(val.target ? val.target.value : val)}
+              />
             </div>
           </div>
 
           <div className="col-lg-3 col-md-4 mb-2 mb-md-0">
             <div className="d-flex align-items-center">
-              <FiCalendar className="mr-2 text-muted" size={16} />
-              <select
-                className="form-control form-control-sm font-weight-bold rounded-pill"
+              <FiCalendar className="mr-2 text-muted flex-shrink-0" size={16} />
+              <CustomSelect
+                size="sm"
+                pill
+                options={DATE_RANGE_OPTIONS}
                 value={dateRangeFilter}
-                onChange={(e) => setDateRangeFilter(e.target.value)}
-              >
-                <option value="all">All Time</option>
-                <option value="today">Today</option>
-                <option value="7days">Last 7 Days</option>
-                <option value="30days">Last 30 Days</option>
-                <option value="this_month">This Month</option>
-              </select>
+                onChange={(val) => setDateRangeFilter(val.target ? val.target.value : val)}
+              />
             </div>
           </div>
 
@@ -301,19 +325,15 @@ const OrderList = () => {
                             <FiLock className="mr-1" size={12} /> Cancelled
                           </span>
                         ) : (
-                          <select
-                            className="form-control form-control-sm font-weight-bold rounded border-primary bg-light"
+                          <CustomSelect
+                            size="sm"
+                            options={ORDER_STATUS_ROW_OPTIONS}
                             value={ord.order_status}
-                            onChange={(e) =>
-                              handleUpdateStatus(ord.id, ord.order_status, e.target.value, ord.payment_status, ord.payment_status)
-                            }
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
+                            onChange={(val) => {
+                              const newStatus = val.target ? val.target.value : val;
+                              handleUpdateStatus(ord.id, ord.order_status, newStatus, ord.payment_status, ord.payment_status);
+                            }}
+                          />
                         )}
                       </td>
                       <td style={{ minWidth: '140px' }}>
@@ -322,18 +342,15 @@ const OrderList = () => {
                             {ord.payment_status}
                           </span>
                         ) : (
-                          <select
-                            className="form-control form-control-sm rounded"
+                          <CustomSelect
+                            size="sm"
+                            options={PAYMENT_STATUS_ROW_OPTIONS}
                             value={ord.payment_status}
-                            onChange={(e) =>
-                              handleUpdateStatus(ord.id, ord.order_status, ord.order_status, ord.payment_status, e.target.value)
-                            }
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="failed">Failed</option>
-                            <option value="refunded">Refunded</option>
-                          </select>
+                            onChange={(val) => {
+                              const newPayStatus = val.target ? val.target.value : val;
+                              handleUpdateStatus(ord.id, ord.order_status, ord.order_status, ord.payment_status, newPayStatus);
+                            }}
+                          />
                         )}
                       </td>
                       <td style={{ minWidth: '150px' }}>

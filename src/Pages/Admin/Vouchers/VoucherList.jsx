@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiTag, FiPlus, FiTrash2, FiEdit, FiSearch, FiClock } from 'react-icons/fi';
 import { getVoucherExpiryInfo } from '../../../utils/voucherUtils';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
 
 const VoucherList = () => {
   const [vouchers, setVouchers] = useState([]);
@@ -245,14 +246,17 @@ const VoucherList = () => {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="font-weight-bold small text-muted">Discount Type</label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={[
+                  { value: 'percentage', label: 'Percentage (%)' },
+                  { value: 'fixed', label: 'Fixed Amount (RM)' }
+                ]}
                 value={formData.discount_type}
-                onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
-              >
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (RM)</option>
-              </select>
+                onChange={(val) => {
+                  const type = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, discount_type: type }));
+                }}
+              />
             </div>
             <div className="col-md-6 mb-3">
               <label className="font-weight-bold small text-muted">Discount Value <span className="text-danger">*</span></label>
@@ -304,14 +308,17 @@ const VoucherList = () => {
             </div>
             <div className="col-md-6 mb-3">
               <label className="font-weight-bold small text-muted">Status</label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={[
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: 'Inactive' }
+                ]}
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+                onChange={(val) => {
+                  const st = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, status: st }));
+                }}
+              />
             </div>
           </div>
 

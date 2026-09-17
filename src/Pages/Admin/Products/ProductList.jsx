@@ -4,6 +4,33 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiCloud } from 'react-icons/fi';
 import AlertDialog from '../../../Components/AlertDialog/AlertDialog';
+import CustomSelect from '../../../Components/CustomSelect/CustomSelect';
+
+const STOCK_FILTER_OPTIONS = [
+  { value: 'all', label: 'All Stock Levels' },
+  { value: 'low', label: 'Low Stock (≤ 10)' },
+  { value: 'out', label: 'Out of Stock (0)' },
+  { value: 'instock', label: 'In Stock (> 10)' }
+];
+
+const STATUS_FILTER_OPTIONS = [
+  { value: 'all', label: 'All Statuses' },
+  { value: 'published', label: 'Published' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'archived', label: 'Archived' }
+];
+
+const BADGE_OPTIONS = [
+  { value: '', label: 'None' },
+  { value: 'NEW', label: 'NEW' },
+  { value: 'SALE', label: 'SALE' },
+  { value: 'HOT', label: 'HOT' }
+];
+
+const FORM_STATUS_OPTIONS = [
+  { value: 'published', label: 'Published' },
+  { value: 'draft', label: 'Draft' }
+];
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -209,46 +236,38 @@ const ProductList = () => {
 
           {/* Category Filter */}
           <div className="col-lg-3 col-md-4 mb-2 mb-md-0">
-            <select
-              className="form-control form-control-sm font-weight-bold rounded-pill"
+            <CustomSelect
+              size="sm"
+              pill
+              options={[
+                { value: 'all', label: 'All Categories' },
+                ...categories.map(c => ({ value: c.id, label: c.name }))
+              ]}
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-            >
-              <option value="all">All Categories</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setCategoryFilter(val.target ? val.target.value : val)}
+            />
           </div>
 
           {/* Stock Quantity Filter */}
           <div className="col-lg-3 col-md-4 mb-2 mb-md-0">
-            <select
-              className="form-control form-control-sm font-weight-bold rounded-pill"
+            <CustomSelect
+              size="sm"
+              pill
+              options={STOCK_FILTER_OPTIONS}
               value={stockFilter}
-              onChange={(e) => setStockFilter(e.target.value)}
-            >
-              <option value="all">All Stock Levels</option>
-              <option value="low">Low Stock (≤ 10)</option>
-              <option value="out">Out of Stock (0)</option>
-              <option value="instock">In Stock (&gt; 10)</option>
-            </select>
+              onChange={(val) => setStockFilter(val.target ? val.target.value : val)}
+            />
           </div>
 
           {/* Status Filter */}
           <div className="col-lg-2 col-md-4">
-            <select
-              className="form-control form-control-sm font-weight-bold rounded-pill"
+            <CustomSelect
+              size="sm"
+              pill
+              options={STATUS_FILTER_OPTIONS}
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All Statuses</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
+              onChange={(val) => setStatusFilter(val.target ? val.target.value : val)}
+            />
           </div>
         </div>
       </div>
@@ -393,17 +412,18 @@ const ProductList = () => {
             </div>
             <div className="col-md-4 mb-3">
               <label className="font-weight-bold small text-muted">Category <span className="required-star">*</span></label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={[
+                  { value: '', label: 'Select Category' },
+                  ...categories.map(c => ({ value: c.id, label: c.name }))
+                ]}
                 value={formData.category_id}
-                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                required
-              >
-                <option value="">Select Category</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+                onChange={(val) => {
+                  const catId = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, category_id: catId }));
+                }}
+                placeholder="Select Category"
+              />
             </div>
           </div>
 
@@ -444,28 +464,25 @@ const ProductList = () => {
             </div>
             <div className="col-md-4 mb-3">
               <label className="font-weight-bold small text-muted">Badge Label</label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={BADGE_OPTIONS}
                 value={formData.badge}
-                onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-              >
-                <option value="">None</option>
-                <option value="NEW">NEW</option>
-                <option value="SALE">SALE</option>
-                <option value="HOT">HOT</option>
-              </select>
+                onChange={(val) => {
+                  const bdg = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, badge: bdg }));
+                }}
+              />
             </div>
             <div className="col-md-4 mb-3">
               <label className="font-weight-bold small text-muted">Publish Status <span className="required-star">*</span></label>
-              <select
-                className="form-control"
+              <CustomSelect
+                options={FORM_STATUS_OPTIONS}
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                required
-              >
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
+                onChange={(val) => {
+                  const st = val.target ? val.target.value : val;
+                  setFormData(prev => ({ ...prev, status: st }));
+                }}
+              />
             </div>
           </div>
 
